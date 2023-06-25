@@ -24,11 +24,11 @@ export class SignalCounterComponent {
   public doubleCount: Signal<number> = computed(() => this.count() * 2);
 
   constructor() {
-    effect(() => console.log("Count updated: ", this.count()));
+    effect(() => console.log("Signals - Count updated: ", this.count()));
   }
 
   fetchDoubleCount() {
-    console.log("DoubleCount: ", this.doubleCount());
+    console.log("Signals - doubleCount: ", this.doubleCount());
   }
 
   increment() {

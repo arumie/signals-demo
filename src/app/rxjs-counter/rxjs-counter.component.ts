@@ -5,6 +5,7 @@ import {
   Observable,
   Subject,
   map,
+  take,
   takeUntil,
   tap,
 } from 'rxjs';
@@ -14,7 +15,7 @@ import {
   standalone: true,
   imports: [CommonModule],
   template: `
-    <p>Count: {{ count$ | async }}</p>
+    <p>Count: {{ effect$ | async }}</p>
     <p>DoubleCount: {{ doubleCount$ | async }}</p>
     <button (click)="increment()">Increment</button>
     <button (click)="fetchDoubleCount()">Log doubleCount</button>
@@ -22,13 +23,13 @@ import {
 })
 export class RxjsCounterComponent implements OnDestroy {
   private destroy$ = new Subject<void>();
-  public count$: BehaviorSubject<number> = new BehaviorSubject<number>(0)
+  public countSub$: BehaviorSubject<number> = new BehaviorSubject<number>(0)
 
-  private effect$ = this.count$.pipe(
-    tap((count) => console.log('Count updated: ', count))
+  public effect$ = this.countSub$.pipe(
+    tap((count) => console.log('RxJS - Count updated: ', count))
   );
   
-  public doubleCount$: Observable<number> = this.count$.pipe(
+  public doubleCount$: Observable<number> = this.countSub$.pipe(
     map((count) => count * 2)
   );
 
@@ -38,11 +39,12 @@ export class RxjsCounterComponent implements OnDestroy {
 
   fetchDoubleCount() {
     this.doubleCount$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((value) => console.log("doubleCount:", value));
+      .pipe(take(1))
+      //.pipe(takeUntil(this.destroy$))
+      .subscribe((value) => console.log("RxJS - doubleCount:", value));
   }
 
   increment() {
-    this.count$.next(this.count$.value + 1);
+    this.countSub$.next(this.countSub$.value + 1);
   }
 }
